@@ -1,0 +1,62 @@
+name: docker-image
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: [self-hosted, al2023, x64, 4xlarge]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 # v4
+        if: github.event_name == 'push'
+        with:
+          role-to-assume: arn:aws:iam::664315256653:role/gha_lisa
+          aws-region: us-east-1
+
+      - name: Dump creds
+        run: |
+          cat <<EOF > /tmp/aws-credentials
+          [default]
+          aws_access_key_id=$AWS_ACCESS_KEY_ID
+          aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
+          aws_session_token=$AWS_SESSION_TOKEN
+          region=$AWS_REGION
+          EOF
+
+      - name: Version tag
+        id: version
+        run: |
+          echo tags="$(date '+%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+
+      - name: Set version
+        run: sed 's/__version__/'"${{ steps.version.outputs.tags}}"'/' Dockerfile.linux | tee Dockerfile
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5
+        with:
+          images: 664315256653.dkr.ecr.us-east-1.amazonaws.com/lisa/lisa
+          tags: type=raw,value=${{ steps.version.outputs.tags }}
+
+      - name: Build and maybe push
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
+        with:
+          context: .
+          tags: ${{ steps.meta.outputs.tags }}
+          push: ${{ github.event_name == 'push' }}
+          secret-files: aws=/tmp/aws-credentials
+          pull: true
+
+
