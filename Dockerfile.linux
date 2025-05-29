@@ -30,12 +30,11 @@ RUN wget https://aka.ms/downloadazcopy-v10-linux -O azcopy.tar.gz && \
     rm -rf azcopy*
 
 ENV LISA_azcopy_path="/usr/local/bin/azcopy"
-
-RUN git clone --depth 1 --branch $(curl --silent "https://api.github.com/repos/microsoft/lisa/releases/latest" \
-    | grep '"tag_name":' \
-    | sed -E 's/.*"([^"]+)".*/\1/') https://github.com/microsoft/lisa.git /app/lisa
+ENV SETUPTOOLS_SCM_PRETEND_VERSION="__version__"
 
 WORKDIR /app/lisa
+
+COPY . .
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 -m pip install --no-cache-dir --editable .[ado,azure,libvirt,baremetal] --config-settings editable_mode=compat
