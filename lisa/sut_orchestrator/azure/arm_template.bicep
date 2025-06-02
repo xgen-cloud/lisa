@@ -178,6 +178,14 @@ func generateOsProfile(node object, admin_username string, admin_password string
   computername: node.short_name
   adminUsername: admin_username
   adminPassword: (empty(admin_password) ? null : admin_password)
+  customData: format('''#!/bin/bash
+set -e
+useradd {0} --groups adm --shell /bin/bash -m
+mkdir -p /home/{0}/.ssh/
+chown {0} /home/{0}/.ssh/
+echo "{1}" > /home/{0}/.ssh/authorized_keys
+chown {0} /home/{0}/.ssh/authorized_keys
+chmod 600 /home/{0}/.ssh/authorized_keys''', admin_username, admin_key_data)
   linuxConfiguration: (((!empty(admin_key_data)) && node.is_linux) ? getLinuxConfiguration('/home/${admin_username}/.ssh/authorized_keys', admin_key_data, empty(admin_password)) : null)
 }
 
