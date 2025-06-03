@@ -20,7 +20,6 @@ jobs:
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@ececac1a45f3b08a01d2dd070d28d111c5fe6722 # v4
-        if: github.event_name == 'push'
         with:
           role-to-assume: arn:aws:iam::664315256653:role/gha_lisa
           aws-region: us-east-1
@@ -55,7 +54,7 @@ jobs:
         with:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
-          push: ${{ github.event_name == 'push' }}
+          push: true
           secret-files: aws=/tmp/aws-credentials
           pull: true
 
