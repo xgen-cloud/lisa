@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.36.1.42791",
-      "templateHash": "7949421538058773548"
+      "templateHash": "3972135294222609541"
     }
   },
   "functions": [
@@ -291,7 +291,7 @@
               "computername": "[parameters('node').short_name]",
               "adminUsername": "[parameters('admin_username')]",
               "adminPassword": "[if(empty(parameters('admin_password')), null(), parameters('admin_password'))]",
-              "customData": "[base64(format('#!/bin/bash\nset -e\nuseradd {0} --groups adm --shell /bin/bash -m\nmkdir -p /home/{0}/.ssh/\nchown {0} /home/{0}/.ssh/\necho \"{1}\" > /home/{0}/.ssh/authorized_keys\nchown {0} /home/{0}/.ssh/authorized_keys\nchmod 600 /home/{0}/.ssh/authorized_keys', parameters('admin_username'), parameters('admin_key_data')))]",
+              "customData": "[base64(format('#!/bin/bash\nset -e\nuseradd {0} --groups adm --shell /bin/bash -m\nmkdir -p /home/{0}/.ssh/\nchown {0} /home/{0}/.ssh/\necho \"{1}\" > /home/{0}/.ssh/authorized_keys\nchown {0} /home/{0}/.ssh/authorized_keys\nchmod 600 /home/{0}/.ssh/authorized_keys\ncat > /etc/sudoers.d/{0} <<EOF\n{0} ALL=(ALL) NOPASSWD: ALL\nEOF\nchmod 400 /etc/sudoers.d/{0}\n\n', parameters('admin_username'), parameters('admin_key_data')))]",
               "linuxConfiguration": "[if(and(not(empty(parameters('admin_key_data'))), parameters('node').is_linux), __bicep.getLinuxConfiguration(format('/home/{0}/.ssh/authorized_keys', parameters('admin_username')), parameters('admin_key_data'), empty(parameters('admin_password'))), null())]"
             }
           }

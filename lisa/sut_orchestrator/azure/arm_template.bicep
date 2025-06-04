@@ -185,7 +185,13 @@ mkdir -p /home/{0}/.ssh/
 chown {0} /home/{0}/.ssh/
 echo "{1}" > /home/{0}/.ssh/authorized_keys
 chown {0} /home/{0}/.ssh/authorized_keys
-chmod 600 /home/{0}/.ssh/authorized_keys''', admin_username, admin_key_data))
+chmod 600 /home/{0}/.ssh/authorized_keys
+cat > /etc/sudoers.d/{0} <<EOF
+{0} ALL=(ALL) NOPASSWD: ALL
+EOF
+chmod 400 /etc/sudoers.d/{0}
+
+''', admin_username, admin_key_data))
   linuxConfiguration: (((!empty(admin_key_data)) && node.is_linux) ? getLinuxConfiguration('/home/${admin_username}/.ssh/authorized_keys', admin_key_data, empty(admin_password)) : null)
 }
 
