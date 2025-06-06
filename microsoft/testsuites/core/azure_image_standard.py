@@ -333,7 +333,8 @@ class AzureImageStandard(TestSuite):
         """,
         priority=1,
         requirement=simple_requirement(
-            supported_platform_type=[AZURE, READY, HYPERV], unsupported_os=[BSD]
+            supported_platform_type=[AZURE, READY, HYPERV],
+            supported_os=[Debian, Suse, Fedora, CoreOs],
         ),
     )
     def verify_grub(self, node: Node) -> None:
