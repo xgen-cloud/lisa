@@ -250,7 +250,12 @@ class Storage(TestSuite):
         ),
     )
     def verify_resource_disk_io(self, node: RemoteNode) -> None:
-        if schema.ResourceDiskType.NVME == node.features[Disk].get_resource_disk_type():
+        try:
+            disk_type = node.features[Disk].get_resource_disk_type()
+        except LisaException as e:
+            raise SkippedException(e)
+
+        if schema.ResourceDiskType.NVME == disk_type:
             raise SkippedException(
                 "Resource disk type is NVMe. NVMe has 'verify_nvme_function' and "
                 "'verify_nvme_function_unpartitioned' testcases to validate IO operations."  # noqa: E501
