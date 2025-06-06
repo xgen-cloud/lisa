@@ -15,7 +15,7 @@ from lisa import (
 )
 from lisa.operating_system import FreeBSD
 from lisa.sut_orchestrator.azure.features import AzureExtension
-from lisa.util import SkippedException
+from lisa.util import LisaException, SkippedException
 
 
 @TestSuiteMetadata(
@@ -45,7 +45,11 @@ class WaAgentBvt(TestSuite):
         test_file = f"/tmp/{unique_name}"
         script = f"touch {test_file} && echo Created {test_file}"
         settings = {"commandToExecute": script}
-        extension = node.features[AzureExtension]
+        try:
+            extension = node.features[AzureExtension]
+        except LisaException as e:
+            raise SkippedException(e)
+
         result = extension.create_or_update(
             name="CustomScript",
             publisher="Microsoft.Azure.Extensions",
