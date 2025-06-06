@@ -161,13 +161,22 @@ class Storage(TestSuite):
         ),
     )
     def verify_resource_disk_mounted(self, node: RemoteNode) -> None:
-        if schema.ResourceDiskType.NVME == node.features[Disk].get_resource_disk_type():
+        try:
+            disk_type = node.features[Disk].get_resource_disk_type()
+        except LisaException as e:
+            raise SkippedException(e)
+
+        if schema.ResourceDiskType.NVME == disk_type:
             raise SkippedException(
                 "Resource disk type is NVMe. NVMe disks are not mounted by default"
             )
 
         # get the mount point for the resource disk
-        resource_disk_mount_point = node.features[Disk].get_resource_disk_mount_point()
+        try:
+            resource_disk_mount_point = node.features[Disk].get_resource_disk_mount_point()
+        except LisaException as e:
+            raise SkippedException(e)
+
         # os disk(root disk) is the entry with mount point `/' in the output
         # of `mount` command
         os_disk_partition = node.features[Disk].get_partition_with_mount_point(
