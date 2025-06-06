@@ -89,7 +89,6 @@ class HvModule(TestSuite):
             "hv_netvsc": "hv_netvsc.ko",
             "hv_vmbus": "hv_vmbus.ko",
             "hid_hyperv": "hid-hyperv.ko",
-            "hyperv_keyboard": "hyperv-keyboard.ko",
         }
         skip_modules = self._get_built_in_modules(node)
         hv_modules_file_names = {
