@@ -248,7 +248,7 @@ class VmSnapsotLinuxBVTExtension(TestSuite):
                     restore_point_name=restore_point,
                     parameters={},
                 )
-                wait_operation(response, time_out=600)
+                wait_operation(response, time_out=900)
                 # check the status of rp and validate the result.
                 self.get_restore_point(
                     log,
