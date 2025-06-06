@@ -1258,7 +1258,12 @@ class AzureImageStandard(TestSuite):
     )
     def verify_resource_disk_file_system(self, node: RemoteNode) -> None:
         node_disc = node.features[Disk]
-        if schema.ResourceDiskType.NVME == node.features[Disk].get_resource_disk_type():
+        try:
+            disk_type = node.features[Disk].get_resource_disk_type()
+        except LisaException as e:
+            raise SkippedException(e)
+
+        if schema.ResourceDiskType.NVME == disk_type:
             raise SkippedException(
                 "Resource disk type is NVMe. NVMe disks are not formatted or mounted by default"  # noqa: E501
             )
