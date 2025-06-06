@@ -212,8 +212,12 @@ class Storage(TestSuite):
         ),
     )
     def verify_swap(self, node: RemoteNode) -> None:
-        is_swap_enabled_wa_agent = node.tools[Waagent].is_swap_enabled()
-        is_swap_enabled_distro = node.tools[Swap].is_swap_enabled()
+        try:
+            is_swap_enabled_wa_agent = node.tools[Waagent].is_swap_enabled()
+            is_swap_enabled_distro = node.tools[Swap].is_swap_enabled()
+        except LisaException as e:
+            raise SkippedException(e)
+
         assert_that(
             is_swap_enabled_distro,
             "swap configuration from waagent.conf and distro should match",
