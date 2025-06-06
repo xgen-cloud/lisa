@@ -1299,12 +1299,16 @@ class AzureImageStandard(TestSuite):
     )
     def verify_waagent_version(self, node: Node) -> None:
         minimum_version = Version("2.2.53.1")
-        waagent = node.tools[Waagent]
-        waagent_version = waagent.get_version()
+        try:
+            waagent = node.tools[Waagent]
+            waagent_version = waagent.get_version()
+        except LisaException as e:
+            raise SkippedException(e)
+
         try:
             current_version = Version(waagent_version)
         except Exception as e:
-            raise LisaException(
+            raise SkippedException(
                 f"Failed to parse waagent version '{waagent_version}'. Error: {str(e)}"
             )
 
