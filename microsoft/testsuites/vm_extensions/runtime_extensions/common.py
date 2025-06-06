@@ -29,7 +29,11 @@ def create_and_verify_vmaccess_extension_run(
     settings: Optional[Dict[str, Any]] = None,
     protected_settings: Optional[Dict[str, Any]] = None,
 ) -> None:
-    extension = node.features[AzureExtension]
+    try:
+        extension = node.features[AzureExtension]
+    except LisaException as e:
+        raise SkippedException(e)
+
     result = extension.create_or_update(
         name="VMAccess",
         publisher="Microsoft.OSTCExtensions",
