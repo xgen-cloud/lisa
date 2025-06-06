@@ -647,7 +647,10 @@ class AzureImageStandard(TestSuite):
         1. Verify the repository configuration depending on the distro type.
         """,
         priority=1,
-        requirement=simple_requirement(supported_platform_type=[AZURE, READY, HYPERV]),
+        requirement=simple_requirement(
+            supported_platform_type=[AZURE, READY, HYPERV],
+            supported_os=[Debian, Suse, Oracle, Fedora, CBLMariner, FreeBSD],
+        ),
     )
     def verify_repository_installed(self, node: Node) -> None:  # noqa: C901
         assert isinstance(node.os, Posix)
