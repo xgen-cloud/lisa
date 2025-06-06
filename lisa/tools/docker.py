@@ -154,7 +154,10 @@ class Docker(Tool):
                 "https://docs.docker.com/engine/install",
             )
         else:
-            raise LisaException(f"{self.node.os.information.vendor} not supported")
+            raise UnsupportedDistroException(
+                self.node.os,
+                f"{self.node.os.information.vendor} not supported",
+            )
         self.start()
         return self._check_exists()
 
