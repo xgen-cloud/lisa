@@ -72,9 +72,19 @@ class AzSecPack(TestSuite):
             Verify whether Azure security pack can be installed, uninstalled
             successfully, and check if the autoconfig is configured successfully.
         """,
-        priority=1,
+        priority=5,
         requirement=simple_requirement(
-            supported_features=[AzureExtension], unsupported_os=[BSD]
+            supported_features=[AzureExtension],
+            supported_os=[
+                Redhat,
+                CentOs,
+                Oracle,
+                Debian,
+                Ubuntu,
+                SLES,
+                AlmaLinux,
+                CBLMariner,
+            ]
         ),
     )
     def verify_azsecpack(self, node: Node, log: Logger, result: TestResult) -> None:

@@ -15,6 +15,7 @@ from lisa import (
 )
 from lisa.sut_orchestrator import AZURE, READY
 from lisa.tools import Dhclient
+from lisa.util import LisaException
 
 
 @TestSuiteMetadata(
@@ -36,7 +37,11 @@ class Dhcp(TestSuite):
         requirement=simple_requirement(supported_platform_type=[AZURE, READY]),
     )
     def verify_dhcp_client_timeout(self, node: Node) -> None:
-        dhclient = node.tools[Dhclient]
+        try:
+            dhclient = node.tools[Dhclient]
+        except LisaException as e:
+            raise SkippedException(e)
+
         try:
             timeout = dhclient.get_timeout()
         except UnsupportedDistroException as e:

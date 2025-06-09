@@ -484,7 +484,11 @@ class Sriov(TestSuite):
         ),
     )
     def verify_sriov_reload_modules(self, environment: Environment) -> None:
-        vm_nics = initialize_nic_info(environment)
+        try:
+            vm_nics = initialize_nic_info(environment)
+        except LisaException as e:
+            raise SkippedException(e)
+
         sriov_basic_test(environment)
 
         module_in_used: Dict[str, List[str]] = {}

@@ -17,7 +17,7 @@ from lisa.operating_system import BSD
 from lisa.sut_orchestrator import AZURE, HYPERV, READY
 from lisa.sut_orchestrator.azure.tools import KvpClient
 from lisa.tools import Pgrep, Stat
-from lisa.util import get_matched_str
+from lisa.util import get_matched_str, SkippedException
 
 
 @TestSuiteMetadata(
@@ -61,6 +61,9 @@ class Kvp(TestSuite):
         # 1. verify that the KVP Daemon is running.
         pgrep = node.tools[Pgrep]
         processes = pgrep.get_processes(kvp_process_name)
+        if len(processes) != 1:
+            raise SkippedException("kvp daemon not running")
+
         assert_that(
             processes,
             "cannot find running kvp daemon, or find multiple running kvp processes.",

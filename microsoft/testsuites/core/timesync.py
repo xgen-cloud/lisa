@@ -479,7 +479,7 @@ class TimeSync(TestSuite):
         2. Manually change the system clock to a time in the past.
         3. Verify that Chrony has corrected the time drift.
         """,
-        priority=1,
+        priority=5,
     )
     def verify_timedrift_corrected(self, node: Node, log: Logger) -> None:
         # Initialize chrony

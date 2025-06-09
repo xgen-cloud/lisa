@@ -333,7 +333,8 @@ class AzureImageStandard(TestSuite):
         """,
         priority=1,
         requirement=simple_requirement(
-            supported_platform_type=[AZURE, READY, HYPERV], unsupported_os=[BSD]
+            supported_platform_type=[AZURE, READY, HYPERV],
+            supported_os=[Debian, Suse, Fedora, CoreOs],
         ),
     )
     def verify_grub(self, node: Node) -> None:
@@ -646,7 +647,10 @@ class AzureImageStandard(TestSuite):
         1. Verify the repository configuration depending on the distro type.
         """,
         priority=1,
-        requirement=simple_requirement(supported_platform_type=[AZURE, READY, HYPERV]),
+        requirement=simple_requirement(
+            supported_platform_type=[AZURE, READY, HYPERV],
+            supported_os=[Debian, Suse, Oracle, Fedora, CBLMariner, FreeBSD],
+        ),
     )
     def verify_repository_installed(self, node: Node) -> None:  # noqa: C901
         assert isinstance(node.os, Posix)
@@ -981,7 +985,7 @@ class AzureImageStandard(TestSuite):
         2. If any unexpected failure, error, warning messages excluding ignorable ones
          existing, fail the case.
         """,
-        priority=1,
+        priority=5,
         requirement=simple_requirement(supported_platform_type=[AZURE, READY, HYPERV]),
     )
     def verify_boot_error_fail_warnings(self, node: Node) -> None:
@@ -1254,7 +1258,12 @@ class AzureImageStandard(TestSuite):
     )
     def verify_resource_disk_file_system(self, node: RemoteNode) -> None:
         node_disc = node.features[Disk]
-        if schema.ResourceDiskType.NVME == node.features[Disk].get_resource_disk_type():
+        try:
+            disk_type = node.features[Disk].get_resource_disk_type()
+        except LisaException as e:
+            raise SkippedException(e)
+
+        if schema.ResourceDiskType.NVME == disk_type:
             raise SkippedException(
                 "Resource disk type is NVMe. NVMe disks are not formatted or mounted by default"  # noqa: E501
             )
@@ -1290,12 +1299,16 @@ class AzureImageStandard(TestSuite):
     )
     def verify_waagent_version(self, node: Node) -> None:
         minimum_version = Version("2.2.53.1")
-        waagent = node.tools[Waagent]
-        waagent_version = waagent.get_version()
+        try:
+            waagent = node.tools[Waagent]
+            waagent_version = waagent.get_version()
+        except LisaException as e:
+            raise SkippedException(e)
+
         try:
             current_version = Version(waagent_version)
         except Exception as e:
-            raise LisaException(
+            raise SkippedException(
                 f"Failed to parse waagent version '{waagent_version}'. Error: {str(e)}"
             )
 

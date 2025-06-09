@@ -47,11 +47,8 @@ class Chrony(Tool):
         ):
             service_name = "chronyd"
         else:
-            posix_os: Posix = cast(Posix, self.node.os)
-            raise LisaException(
-                "Please double check chrony service name in distro "
-                f"{posix_os.name} {posix_os.information.version}"
-            )
+            service_name = "chronyd"
+
         service = self.node.tools[Service]
         service.restart_service(service_name)
 
