@@ -2,7 +2,7 @@
 # Licensed under the MIT license.
 from lisa import TestCaseMetadata, TestSuite, TestSuiteMetadata
 from lisa.node import Node
-from lisa.operating_system import BSD, Windows
+from lisa.operating_system import CBLMariner, Debian, Redhat, Suse
 from lisa.testsuite import simple_requirement
 from lisa.tools import Vdsotest
 
@@ -32,7 +32,7 @@ class Vdso(TestSuite):
         """,
         priority=1,
         requirement=simple_requirement(
-            unsupported_os=[BSD, Windows],
+            supported_os=[Redhat, Debian, Suse, CBLMariner],
         ),
     )
     def verify_vdso(self, node: Node) -> None:

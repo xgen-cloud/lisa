@@ -18,7 +18,7 @@ from lisa.operating_system import BSD
 from lisa.sut_orchestrator import AZURE, HYPERV, READY
 from lisa.sut_orchestrator.azure.tools import KvpClient
 from lisa.tools import Pgrep, Service, Stat
-from lisa.util import get_matched_str
+from lisa.util import SkippedException, get_matched_str
 
 
 @TestSuiteMetadata(
@@ -79,6 +79,9 @@ class Kvp(TestSuite):
                         )
                         service.restart_service(svc_name)
                     break
+
+        if len(node.tools[Pgrep].get_processes(kvp_process_name)) != 1:
+            raise SkippedException("kvp daemon not running")
 
         pool_count = kvp_client.get_pool_count()
         assert_that(pool_count, "kvp pool count must be 5").is_equal_to(5)

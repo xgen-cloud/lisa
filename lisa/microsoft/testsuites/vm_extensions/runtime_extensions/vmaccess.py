@@ -233,6 +233,10 @@ class VMAccessTests(VmExtensionTestBase):  # type: ignore[misc]
         description="""
         Runs the VMAccess VM extension with a valid username and password.
         """,
+
+        requirement=simple_requirement(
+            supported_features=[AzureExtension],
+        ),
         priority=1,
     )
     def verify_valid_password_run(self, log: Logger, node: Node) -> None:

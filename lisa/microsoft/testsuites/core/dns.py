@@ -21,6 +21,7 @@ from lisa.util import (
     ReleaseEndOfLifeException,
     RepoNotExistException,
     retry_without_exceptions,
+    SkippedException,
 )
 
 
@@ -84,6 +85,9 @@ class Dns(TestSuite):
             # then skip the step of upgrading system. Continue the following test
             node.log.debug(e)
             raise PassedException(e) from e
+
+        except (NotImplementedError):
+            raise SkippedException(f"upgrade not implemented for {node.os.name}")
 
         finally:
             self._check_dns_name_resolution(node)

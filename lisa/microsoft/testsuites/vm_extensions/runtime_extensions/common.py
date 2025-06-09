@@ -21,7 +21,7 @@ from lisa.sut_orchestrator.azure.common import (
 from lisa.sut_orchestrator.azure.features import AzureExtension
 from lisa.sut_orchestrator.azure.platform_ import AzurePlatform
 from lisa.sut_orchestrator.azure.tools import Waagent
-from lisa.util import SkippedException, parse_version
+from lisa.util import LisaException, SkippedException, parse_version
 
 
 def create_and_verify_vmaccess_extension_run(
@@ -29,7 +29,11 @@ def create_and_verify_vmaccess_extension_run(
     settings: Optional[Dict[str, Any]] = None,
     protected_settings: Optional[Dict[str, Any]] = None,
 ) -> None:
-    extension = node.features[AzureExtension]
+    try:
+        extension = node.features[AzureExtension]
+    except LisaException as e:
+        raise SkippedException(e)
+
     result = extension.create_or_update(
         name="VMAccess",
         publisher="Microsoft.OSTCExtensions",
@@ -63,8 +67,12 @@ def execute_command(file_name: str, expected_exit_code: int, node: Node) -> None
 
 
 def check_waagent_version_supported(node: Node) -> None:
-    waagent = node.tools[Waagent]
-    waagent_version = waagent.get_version()
+    try:
+        waagent = node.tools[Waagent]
+        waagent_version = waagent.get_version()
+    except LisaException as e:
+        raise SkippedException(e)
+
     result = parse_version(waagent_version).compare("2.4.0")
     if result < 0:
         waagent_auto_update_enabled = waagent.is_autoupdate_enabled()
