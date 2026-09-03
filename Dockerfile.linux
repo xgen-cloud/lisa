@@ -24,7 +24,9 @@ RUN tdnf update -y && \
     tdnf clean all && \
     rm -rf /var/cache/tdnf /tmp/*
 
-RUN wget https://aka.ms/downloadazcopy-v10-linux -O azcopy.tar.gz && \
+RUN AZCOPY_URL="$(curl -fsSL https://api.github.com/repos/Azure/azure-storage-azcopy/releases/latest | \
+        python3 -c 'import json, sys; release = json.load(sys.stdin); print(next(asset["browser_download_url"] for asset in release["assets"] if asset["name"].startswith("azcopy_linux_amd64_") and asset["name"].endswith(".tar.gz")))')" && \
+    wget "$AZCOPY_URL" -O azcopy.tar.gz && \
     tar -xvf azcopy.tar.gz && \
     mv azcopy*/azcopy /usr/local/bin/ && \
     rm -rf azcopy*
