@@ -224,7 +224,8 @@ class Provisioning(TestSuite):
         This case runs smoke test on a node provisioned with an ultra datadisk.
         The test steps are same as `smoke_test`.
         """,
-        priority=1,
+        # testing in SRE-24124 showed this provisioning to be flaky and unnecessary for Atlas.
+        priority=5,  # unreachable by any tier
         requirement=simple_requirement(
             disk=schema.DiskOptionSettings(
                 data_disk_type=schema.DiskType.UltraSSDLRS,
